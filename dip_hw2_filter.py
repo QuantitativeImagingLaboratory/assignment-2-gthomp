@@ -1,17 +1,19 @@
 """dip_hw2_dft.py: Starter file to run howework 2"""
 
-#Example Usage: ./dip_hw1_filter -i image -m mask
-#Example Usage: python dip_hw1_filter.py -i image -m mask
+# Example Usage: ./dip_hw1_filter -i image -m mask
+# Example Usage: python dip_hw1_filter.py -i image -m mask
 
 
-__author__      = "Pranav Mantini"
+__author__ = "Pranav Mantini"
 __email__ = "pmantini@uh.edu"
 __version__ = "1.0.0"
 
 import cv2
 import sys
+import numpy as np
 from DFT.Filtering import Filtering
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 def display_image(window_name, image):
@@ -25,7 +27,7 @@ def main():
     """ The main funtion that parses input arguments, calls the approrpiate
      fitlering method and writes the output image"""
 
-    #Parse input arguments
+    # Parse input arguments
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
@@ -33,7 +35,8 @@ def main():
     parser.add_argument("-i", "--image", dest="image",
                         help="specify the name of the image", metavar="IMAGE")
     parser.add_argument("-m", "--mask", dest="mask",
-                        help="specify name of the mask (ideal_l, ideal_h, butterworth_l, butterworth_h, gaussian_l or gaussian_h)", metavar="MASK")
+                        help="specify name of the mask (ideal_l, ideal_h, butterworth_l, butterworth_h, gaussian_l or gaussian_h)",
+                        metavar="MASK")
     parser.add_argument("-c", "--cutoff_f", dest="cutoff_f",
                         help="specify the cutoff frequency", metavar="CUTOFF FREQUENCY")
     parser.add_argument("-o", "--order", dest="order",
@@ -41,7 +44,7 @@ def main():
 
     args = parser.parse_args()
 
-    #Load image
+    # Load image
     if args.image is None:
         print("Please specify the name of image")
         print("use the -h option to see usage information")
@@ -51,12 +54,12 @@ def main():
         input_image = cv2.imread(args.image, 0)
         rows, cols = input_image.shape
 
-    #Check resize scale parametes
+    # Check resize scale parametes
     if args.mask is None:
         print("Mask not specified using default (ideal_l)")
         print("use the -h option to see usage information")
         mask = 'ideal_l'
-    elif args.mask not in ['ideal_l', 'ideal_h', 'butterworth_l', 'butterworth_h', 'gaussian_l' or 'gaussian_h']:
+    elif args.mask not in ['ideal_l', 'ideal_h', 'butterworth_l', 'butterworth_h', 'gaussian_l', 'gaussian_h']:
         print("Unknown mask, using default (ideal_l)")
         print("use the -h option to see usage information")
         mask = 'ideal_l'
@@ -85,23 +88,19 @@ def main():
         Filter_obj = Filtering(input_image, mask, cutoff_f)
         output = Filter_obj.filtering()
 
-    #Write output file
+    # Write output file
     output_dir = 'output/'
 
-    output_image_name = output_dir+image_name+"_"+mask+datetime.now().strftime("%m%d-%H%M%S")+".jpg"
-    cv2.imwrite(output_image_name, output[0])
-    output_image_name = output_dir + image_name+"_dft_" + mask + datetime.now().strftime("%m%d-%H%M%S") + ".jpg"
-    cv2.imwrite(output_image_name, output[1])
-    output_image_name = output_dir + image_name + "_dft_filter_" + mask + datetime.now().strftime("%m%d-%H%M%S") + ".jpg"
-    cv2.imwrite(output_image_name, output[2])
+    output_image_name = output_dir + image_name + "_" \
+                        + mask + datetime.now().strftime("%m%d-%H%M%S") + ".jpg"
+    cv2.imwrite(output_image_name, np.abs(output[0]))
+    output_image_name = output_dir + image_name + "_dft_" \
+                        + mask + datetime.now().strftime("%m%d-%H%M%S") + ".jpg"
+    cv2.imwrite(output_image_name, np.abs(output[1]))
+    output_image_name = output_dir + image_name + "_dft_filter_" \
+                        + mask + datetime.now().strftime("%m%d-%H%M%S") + ".jpg"
+    cv2.imwrite(output_image_name, np.abs(output[2]))
 
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
